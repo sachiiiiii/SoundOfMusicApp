@@ -49,6 +49,76 @@ let locations = [
 ];
 
 
+// --- API Routes for Characters ---
+// GET all characters or filter by family
+app.get('/api/characters', (req, res) => {
+    const { family } = req.query; // Extract 'family' query parameter
+    if (family) {
+        // Filter characters by family (case-insensitive)
+        const filteredCharacters = characters.filter(char =>
+            char.family.toLowerCase().includes(family.toLowerCase())
+        );
+        return res.json(filteredCharacters);
+    }
+    res.json(characters); // Return all characters if no filter
+});
+
+// GET a single character by ID
+app.get('/api/characters/:id', (req, res) => {
+    const character = characters.find(c => c.id === req.params.id);
+    if (!character) {
+        return res.status(404).json({ message: 'Character not found' });
+    }
+    res.json(character);
+});
+
+// --- API Routes for Songs ---
+// GET all songs or filter by mood
+app.get('/api/songs', (req, res) => {
+    const { mood } = req.query; // Extract 'mood' query parameter
+    if (mood) {
+        // Filter songs by mood (case-insensitive)
+        const filteredSongs = songs.filter(song =>
+            song.mood.toLowerCase().includes(mood.toLowerCase())
+        );
+        return res.json(filteredSongs);
+    }
+    res.json(songs); // Return all songs if no filter
+});
+
+// GET a single song by ID
+app.get('/api/songs/:id', (req, res) => {
+    const song = songs.find(s => s.id === req.params.id);
+    if (!song) {
+        return res.status(404).json({ message: 'Song not found' });
+    }
+    res.json(song);
+});
+
+// --- API Routes for Locations ---
+// GET all locations or filter by city
+app.get('/api/locations', (req, res) => {
+    const { city } = req.query; // Extract 'city' query parameter
+    if (city) {
+        // Filter locations by city (case-insensitive)
+        const filteredLocations = locations.filter(loc =>
+            loc.city.toLowerCase().includes(city.toLowerCase())
+        );
+        return res.json(filteredLocations);
+    }
+    res.json(locations); // Return all locations if no filter
+});
+
+// GET a single location by ID
+app.get('/api/locations/:id', (req, res) => {
+    const location = locations.find(l => l.id === req.params.id);
+    if (!location) {
+        return res.status(404).json({ message: 'Location not found' });
+    }
+    res.json(location);
+});
+
+
 // --- View Engine Setup ---
 // Set the directory for views (template files)
 // `path.join(__dirname, 'views')` ensures that the path is correct regardless of
