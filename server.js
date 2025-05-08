@@ -10,6 +10,45 @@ app.use(express.urlencoded({ extended: true }));
 // Middleware to parse JSON bodies (for API requests)
 app.use(express.json());
 
+
+const { v4: uuidv4 } = require('uuid'); // Import the uuid package for generating unique IDs
+
+// --- In-Memory Data (Simulating a Database) ---
+// characters, songs, and locations arrays
+//  Each element in these arrays is an object representing a data entry.
+// Each object has an id generated using uuidv4()
+let characters = [
+    { id: uuidv4(), name: 'Maria', role: 'Governess', family: 'Non-Von Trapp' },
+    { id: uuidv4(), name: 'Captain Georg von Trapp', role: 'Father', family: 'Von Trapp' },
+    { id: uuidv4(), name: 'Liesl von Trapp', role: 'Eldest Daughter', family: 'Von Trapp' },
+    { id: uuidv4(), name: 'Friedrich von Trapp', role: 'Son', family: 'Von Trapp' },
+    { id: uuidv4(), name: 'Louisa von Trapp', role: 'Daughter', family: 'Von Trapp' },
+    { id: uuidv4(), name: 'Kurt von Trapp', role: 'Son', family: 'Von Trapp' },
+    { id: uuidv4(), name: 'Brigitta von Trapp', role: 'Daughter', family: 'Von Trapp' },
+    { id: uuidv4(), name: 'Marta von Trapp', role: 'Daughter', family: 'Von Trapp' },
+    { id: uuidv4(), name: 'Gretl von Trapp', role: 'Youngest Daughter', family: 'Von Trapp' },
+    { id: uuidv4(), name: 'Baroness Elsa Schraeder', role: 'Captain\'s Fiancee', family: 'Non-Von Trapp' },
+    { id: uuidv4(), name: 'Max Detweiler', role: 'Friend/Promoter', family: 'Non-Von Trapp' },
+    { id: uuidv4(), name: 'Mother Abbess', role: 'Head of Abbey', family: 'Non-Von Trapp' }
+];
+
+let songs = [
+    { id: uuidv4(), title: 'Do-Re-Mi', artist: 'Maria & Children', duration: '4:00', mood: 'Uplifting', year: 1965 },
+    { id: uuidv4(), title: 'My Favorite Things', artist: 'Maria', duration: '2:30', mood: 'Comforting', year: 1965 },
+    { id: uuidv4(), title: 'Edelweiss', artist: 'Captain von Trapp', duration: '2:00', mood: 'Patriotic', year: 1965 },
+    { id: uuidv4(), title: 'Sixteen Going on Seventeen', artist: 'Liesl & Rolf', duration: '3:20', mood: 'Romantic', year: 1965 },
+    { id: uuidv4(), title: 'The Sound of Music', artist: 'Maria', duration: '2:10', mood: 'Inspirational', year: 1965 },
+    { id: uuidv4(), title: 'So Long, Farewell', artist: 'Children', duration: '2:25', mood: 'Playful', year: 1965 }
+];
+
+let locations = [
+    { id: uuidv4(), name: 'Nonnberg Abbey', city: 'Salzburg', country: 'Austria', description: 'Maria\'s convent' },
+    { id: uuidv4(), name: 'Von Trapp Villa', city: 'Salzburg', country: 'Austria', description: 'The family home' },
+    { id: uuidv4(), name: 'Mirabell Gardens', city: 'Salzburg', country: 'Austria', description: 'Iconic filming location' },
+    { id: uuidv4(), name: 'Salzburg Residenz Fountain', city: 'Salzburg', country: 'Austria', description: 'Featured in Do-Re-Mi' }
+];
+
+
 // --- View Engine Setup ---
 // Set the directory for views (template files)
 // `path.join(__dirname, 'views')` ensures that the path is correct regardless of
