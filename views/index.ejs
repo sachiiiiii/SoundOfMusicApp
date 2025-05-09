@@ -11,13 +11,14 @@
         <h1>Welcome to The Sound of Music App!</h1>
         <nav>
             <a href="/">Home</a> |
-            <a href="/api/characters">API: All Characters</a> |
-            <a href="/api/songs">API: All Songs</a> |
-            <a href="/api/locations">API: All Locations</a>
+            <a href="/api/characters">API: Characters</a> |
+            <a href="/api/songs">API: Songs</a> |
+            <a href="/api/locations">API: Locations</a>
         </nav>
     </header>
     <main>
-        <section>
+        <!-- Characters List -->
+        <section> 
             <h2>Current Characters</h2>
             <% if (characters && characters.length > 0) { %>
                 <ul class="character-list">
@@ -33,6 +34,7 @@
             <% } %>
         </section>
 
+        <!-- New Character Form -->
         <section class="form-section">
             <h2>Add New Character</h2>
             <form action="/api/characters" method="POST" class="api-form">
@@ -73,7 +75,7 @@
                     method: form.method,
                     headers: {
                         'Content-Type': 'application/json',
-                        'x-auth-token': 'tsom1965' // Include the authorization token
+                        'x-auth-token': 'tsom1965' // Include authorization token
                     },
                     body: JSON.stringify(data)
                 });
@@ -83,8 +85,8 @@
                     formMessage.textContent = `Character "${newCharacter.name}" added successfully!`;
                     formMessage.style.color = 'green';
                     form.reset(); // Clear the form
-                    // Optionally, reload the page or dynamically add the new character to the list
-                    setTimeout(() => window.location.reload(), 1500); // Reload to see updated list
+                    // Reload the page to see updated character list
+                    setTimeout(() => window.location.reload(), 1500);
                 } else {
                     const errorData = await response.json();
                     formMessage.textContent = `Error: ${errorData.message || response.statusText}`;
