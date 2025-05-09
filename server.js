@@ -140,15 +140,16 @@ app.delete('/api/locations/:id', authorizeAPIRequest, (req, res) => {
 
 // --- ROUTES ---
 // Basic route to render our home page
-app.get('/', (req, res) => {
+app.get('/', (req, res, next) => {
     // Renders the 'index.ejs' file located in the 'views' directory
     // We can pass data to the view as an object.
     res.render('index', { pageTitle: 'The Sound of Music App' });
+    next();
 });
 
 // --- API Routes for Characters ---
 // GET all characters or filter by family
-app.get('/api/characters', (req, res) => {
+app.get('/api/characters', (req, res, next) => {
     const { family } = req.query; // Extract 'family' query parameter
     if (family) {
         // Filter characters by family (case-insensitive)
@@ -158,19 +159,21 @@ app.get('/api/characters', (req, res) => {
         return res.json(filteredCharacters);
     }
     res.json(characters); // Return all characters if no filter
+    next();
 });
 
 // GET a single character by ID
-app.get('/api/characters/:id', (req, res) => {
+app.get('/api/characters/:id', (req, res, next) => {
     const character = characters.find(c => c.id === req.params.id);
     if (!character) {
         return res.status(404).json({ message: 'Character not found' });
     }
     res.json(character);
+    next();
 });
 
 // POST a new character
-app.post('/api/characters', (req, res) => {
+app.post('/api/characters', (req, res, next) => {
     // Ensure required fields are present
     const { name, role, family } = req.body;
     if (!name || !role || !family) {
@@ -186,11 +189,12 @@ app.post('/api/characters', (req, res) => {
 
     characters.push(newCharacter); // Add the new character to our in-memory array
     res.status(201).json(newCharacter); // Respond with the created character and 201 Created status
+    next();
 });
 
 // --- API Routes for Songs ---
 // GET all songs or filter by mood
-app.get('/api/songs', (req, res) => {
+app.get('/api/songs', (req, res, next) => {
     const { mood } = req.query; // Extract 'mood' query parameter
     if (mood) {
         // Filter songs by mood (case-insensitive)
@@ -200,19 +204,21 @@ app.get('/api/songs', (req, res) => {
         return res.json(filteredSongs);
     }
     res.json(songs); // Return all songs if no filter
+    next();
 });
 
 // GET a single song by ID
-app.get('/api/songs/:id', (req, res) => {
+app.get('/api/songs/:id', (req, res, next) => {
     const song = songs.find(s => s.id === req.params.id);
     if (!song) {
         return res.status(404).json({ message: 'Song not found' });
     }
     res.json(song);
+    next();
 });
 
 // PATCH an existing song
-app.patch('/api/songs/:id', (req, res) => {
+app.patch('/api/songs/:id', (req, res, next) => {
     const songId = req.params.id;
     const songIndex = songs.findIndex(s => s.id === songId);
 
@@ -225,12 +231,12 @@ app.patch('/api/songs/:id', (req, res) => {
     songs[songIndex] = updatedSong; // Replace the old song with the updated one
 
     res.json(updatedSong); // Respond with the updated song
+    next();
 });
-
 
 // --- API Routes for Locations ---
 // GET all locations or filter by city
-app.get('/api/locations', (req, res) => {
+app.get('/api/locations', (req, res, next) => {
     const { city } = req.query; // Extract 'city' query parameter
     if (city) {
         // Filter locations by city (case-insensitive)
@@ -240,19 +246,21 @@ app.get('/api/locations', (req, res) => {
         return res.json(filteredLocations);
     }
     res.json(locations); // Return all locations if no filter
+    next();
 });
 
 // GET a single location by ID
-app.get('/api/locations/:id', (req, res) => {
+app.get('/api/locations/:id', (req, res, next) => {
     const location = locations.find(l => l.id === req.params.id);
     if (!location) {
         return res.status(404).json({ message: 'Location not found' });
     }
     res.json(location);
+    next();
 });
 
 // POST a new location
-app.post('/api/locations', (req, res) => {
+app.post('/api/locations', (req, res, next) => {
     // Ensure required fields are present
     const { name, city, country, description } = req.body;
     if (!name || !city || !country || !description) {
@@ -269,10 +277,11 @@ app.post('/api/locations', (req, res) => {
 
     locations.push(newLocation); // Add the new character to our in-memory array
     res.status(201).json(newLocation); // Respond with the created character and 201 Created status
+    next();
 });
 
 // DELETE a location
-app.delete('/api/locations/:id', (req, res) => {
+app.delete('/api/locations/:id', (req, res, next) => {
     const locationId = req.params.id;
     const initialLength = locations.length;
     // Filter out the location with the given ID
@@ -284,6 +293,7 @@ app.delete('/api/locations/:id', (req, res) => {
     }
 
     res.status(204).send(); // Respond with 204 No Content for successful deletion
+    next();
 });
 
 
@@ -299,8 +309,6 @@ app.set('view engine', 'ejs');
 // Serve static files from the 'public' directory
 // For example, `public/css/style.css` will be accessible via `/css/style.css`
 app.use(express.static(path.join(__dirname, 'public')));
-
-
 
 
 // --- Error-Handling Middleware ---
