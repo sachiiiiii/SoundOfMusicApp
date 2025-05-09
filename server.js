@@ -154,6 +154,25 @@ app.get('/api/locations/:id', (req, res) => {
     res.json(location);
 });
 
+app.post('/api/locations', (req, res) => {
+    // Ensure required fields are present
+    const { name, city, country, description } = req.body;
+    if (!name || !city || !country || !description) {
+        return res.status(400).json({ message: 'Name, city, country and description are required' });
+    }
+
+    const newLocation = {
+        id: uuidv4(), // Generate a unique ID using uuid
+        name,
+        city,
+        country,
+        description
+    };
+
+    locations.push(newLocation); // Add the new character to our in-memory array
+    res.status(201).json(newLocation); // Respond with the created character and 201 Created status
+});
+
 // DELETE a location (allows client deletion)
 app.delete('/api/locations/:id', (req, res) => {
     const locationId = req.params.id;
