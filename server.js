@@ -55,8 +55,8 @@ app.get('/api/characters', (req, res) => {
     const { family } = req.query; // Extract 'family' query parameter
     if (family) {
         // Filter characters by family (case-insensitive)
-        const filteredCharacters = characters.filter(char =>
-            char.family.toLowerCase().includes(family.toLowerCase())
+        const filteredCharacters = characters.filter(character => 
+            character.family.toLowerCase() === family.toLowerCase()
         );
         return res.json(filteredCharacters);
     }
@@ -70,6 +70,25 @@ app.get('/api/characters/:id', (req, res) => {
         return res.status(404).json({ message: 'Character not found' });
     }
     res.json(character);
+});
+
+// POST a new character (allows client creation)
+app.post('/api/characters', (req, res) => {
+    // Ensure required fields are present
+    const { name, role, family } = req.body;
+    if (!name || !role || !family) {
+        return res.status(400).json({ message: 'Name, role, and family are required' });
+    }
+
+    const newCharacter = {
+        id: uuidv4(), // Generate a unique ID using uuid
+        name,
+        role,
+        family
+    };
+
+    characters.push(newCharacter); // Add the new character to our in-memory array
+    res.status(201).json(newCharacter); // Respond with the created character and 201 Created status
 });
 
 // --- API Routes for Songs ---
