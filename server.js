@@ -114,6 +114,23 @@ app.get('/api/songs/:id', (req, res) => {
     res.json(song);
 });
 
+// PATCH an existing song (allows client manipulation)
+app.patch('/api/songs/:id', (req, res) => {
+    const songId = req.params.id;
+    const songIndex = songs.findIndex(s => s.id === songId);
+
+    if (songIndex === -1) {
+        return res.status(404).json({ message: 'Song not found' });
+    }
+
+    // Update only the fields that are provided in the request body
+    const updatedSong = { ...songs[songIndex], ...req.body };
+    songs[songIndex] = updatedSong; // Replace the old song with the updated one
+
+    res.json(updatedSong); // Respond with the updated song
+});
+
+
 // --- API Routes for Locations ---
 // GET all locations or filter by city
 app.get('/api/locations', (req, res) => {
