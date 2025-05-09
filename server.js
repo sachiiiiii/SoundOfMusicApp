@@ -58,6 +58,86 @@ const requestLogger = (req, res, next) => {
 // Apply the request logger middleware to all incoming requests
 app.use(requestLogger);
 
+Credit: Google
+// --- Custom Middleware 2: Basic Authorization Simulation ---
+// Check for a simple 'X-Auth-Token' header
+const authorizeAPIRequest = (req, res, next) => {
+    const authToken = req.headers['x-auth-token']; // Check the header
+
+    if (!authToken || authToken !== 'tsom1965') { // Simple check for a predefined token
+        return res.status(403).json({ message: 'Forbidden: Invalid or missing authorization token.' });
+    }
+    next(); // If authorized, proceed to the next middleware/route
+};
+
+// Apply the authorization middleware to specific API routes that require it
+app.post('/api/characters', authorizeAPIRequest, (req, res) => {
+    // Ensure required fields are present
+    const { name, role, family } = req.body;
+    if (!name || !role || !family) {
+        return res.status(400).json({ message: 'Name, role, and family are required' });
+    }
+
+    const newCharacter = {
+        id: uuidv4(), // Generate a unique ID using uuid
+        name,
+        role,
+        family
+    };
+
+    characters.push(newCharacter); // Add the new character to our in-memory array
+    res.status(201).json(newCharacter); // Respond with the created character and 201 Created status
+
+});
+
+app.patch('/api/songs/:id', authorizeAPIRequest, (req, res) => {
+    const songId = req.params.id;
+    const songIndex = songs.findIndex(s => s.id === songId);
+
+    if (songIndex === -1) {
+        return res.status(404).json({ message: 'Song not found' });
+    }
+
+    // Update only the fields that are provided in the request body
+    const updatedSong = { ...songs[songIndex], ...req.body };
+    songs[songIndex] = updatedSong; // Replace the old song with the updated one
+
+    res.json(updatedSong); // Respond with the updated song
+});
+
+app.post('/api/locations', authorizeAPIRequest, (req, res) => {
+    // Ensure required fields are present
+    const { name, city, country, description } = req.body;
+    if (!name || !city || !country || !description) {
+        return res.status(400).json({ message: 'Name, city, country and description are required' });
+    }
+
+    const newLocation = {
+        id: uuidv4(), // Generate a unique ID using uuid
+        name,
+        city,
+        country,
+        description
+    };
+
+    locations.push(newLocation); // Add the new character to our in-memory array
+    res.status(201).json(newLocation); // Respond with the created character and 201 Created status
+});
+
+app.delete('/api/locations/:id', authorizeAPIRequest, (req, res) => {
+    const locationId = req.params.id;
+    const initialLength = locations.length;
+    // Filter out the location with the given ID
+    locations = locations.filter(loc => loc.id !== locationId);
+
+    if (locations.length === initialLength) {
+        // If length hasn't changed, it means no location was found/deleted
+        return res.status(404).json({ message: 'Location not found' });
+    }
+
+    res.status(204).send(); // Respond with 204 No Content for successful deletion
+});
+
 
 // --- API Routes for Characters ---
 // GET all characters or filter by family
@@ -65,7 +145,7 @@ app.get('/api/characters', (req, res) => {
     const { family } = req.query; // Extract 'family' query parameter
     if (family) {
         // Filter characters by family (case-insensitive)
-        const filteredCharacters = characters.filter(character => 
+        const filteredCharacters = characters.filter(character =>
             character.family.toLowerCase() === family.toLowerCase()
         );
         return res.json(filteredCharacters);
