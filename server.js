@@ -304,8 +304,6 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 
 // --- Error-Handling Middleware ---
-// This middleware must be defined last, after all other app.use() and route calls.
-// It has four arguments: (err, req, res, next)
 app.use((err, req, res, next) => {
     console.error(err.stack); // Log the error stack to the console for debugging purposes
     res.status(500).json({ // Send a 500 Internal Server Error response
