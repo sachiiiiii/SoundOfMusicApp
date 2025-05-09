@@ -58,8 +58,8 @@ const requestLogger = (req, res, next) => {
 // Apply the request logger middleware to all incoming requests
 app.use(requestLogger);
 
-Credit: Google
-// --- Custom Middleware 2: Basic Authorization Simulation ---
+
+// --- Custom Middleware 2: Basic Authorization Simulation ---Credit: Google
 // Check for a simple 'X-Auth-Token' header
 const authorizeAPIRequest = (req, res, next) => {
     const authToken = req.headers['x-auth-token']; // Check the header
@@ -138,6 +138,13 @@ app.delete('/api/locations/:id', authorizeAPIRequest, (req, res) => {
     res.status(204).send(); // Respond with 204 No Content for successful deletion
 });
 
+// --- ROUTES ---
+// Basic route to render our home page
+app.get('/', (req, res) => {
+    // Renders the 'index.ejs' file located in the 'views' directory
+    // We can pass data to the view as an object.
+    res.render('index', { pageTitle: 'The Sound of Music App' });
+});
 
 // --- API Routes for Characters ---
 // GET all characters or filter by family
@@ -162,7 +169,7 @@ app.get('/api/characters/:id', (req, res) => {
     res.json(character);
 });
 
-// POST a new character (allows client creation)
+// POST a new character
 app.post('/api/characters', (req, res) => {
     // Ensure required fields are present
     const { name, role, family } = req.body;
@@ -204,7 +211,7 @@ app.get('/api/songs/:id', (req, res) => {
     res.json(song);
 });
 
-// PATCH an existing song (allows client manipulation)
+// PATCH an existing song
 app.patch('/api/songs/:id', (req, res) => {
     const songId = req.params.id;
     const songIndex = songs.findIndex(s => s.id === songId);
@@ -244,6 +251,7 @@ app.get('/api/locations/:id', (req, res) => {
     res.json(location);
 });
 
+// POST a new location
 app.post('/api/locations', (req, res) => {
     // Ensure required fields are present
     const { name, city, country, description } = req.body;
@@ -263,7 +271,7 @@ app.post('/api/locations', (req, res) => {
     res.status(201).json(newLocation); // Respond with the created character and 201 Created status
 });
 
-// DELETE a location (allows client deletion)
+// DELETE a location
 app.delete('/api/locations/:id', (req, res) => {
     const locationId = req.params.id;
     const initialLength = locations.length;
@@ -292,12 +300,25 @@ app.set('view engine', 'ejs');
 // For example, `public/css/style.css` will be accessible via `/css/style.css`
 app.use(express.static(path.join(__dirname, 'public')));
 
-// --- Routes ---
-// Basic route to render our home page
-app.get('/', (req, res) => {
-    // Renders the 'index.ejs' file located in the 'views' directory
-    // We can pass data to the view as an object.
-    res.render('index', { pageTitle: 'The Sound of Music App' });
+
+
+
+// --- Error-Handling Middleware ---
+// This middleware must be defined last, after all other app.use() and route calls.
+// It has four arguments: (err, req, res, next)
+app.use((err, req, res, next) => {
+    console.error(err.stack); // Log the error stack to the console for debugging purposes
+    res.status(500).json({ // Send a 500 Internal Server Error response
+        message: 'Something went wrong!',
+        error: err.message // Optionally send the error message, but be careful with sensitive info
+    });
+});
+
+// --- Server Listener ---
+// Start the server and listen for incoming requests on the specified port
+app.listen(PORT, () => {
+    console.log(`Server is running on http://localhost:${PORT}`);
+    console.log('Press Ctrl+C to stop the server');
 });
 
 // --- Server Listener ---
