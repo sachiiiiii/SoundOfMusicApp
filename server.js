@@ -154,6 +154,21 @@ app.get('/api/locations/:id', (req, res) => {
     res.json(location);
 });
 
+// DELETE a location (allows client deletion)
+app.delete('/api/locations/:id', (req, res) => {
+    const locationId = req.params.id;
+    const initialLength = locations.length;
+    // Filter out the location with the given ID
+    locations = locations.filter(loc => loc.id !== locationId);
+
+    if (locations.length === initialLength) {
+        // If length hasn't changed, it means no location was found/deleted
+        return res.status(404).json({ message: 'Location not found' });
+    }
+
+    res.status(204).send(); // Respond with 204 No Content for successful deletion
+});
+
 
 // --- View Engine Setup ---
 // Set the directory for views (template files)
