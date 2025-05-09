@@ -49,6 +49,16 @@ let locations = [
 ];
 
 
+// --- Custom Middleware 1: Request Logger ---
+// Log details of each incoming request.
+const requestLogger = (req, res, next) => {
+    console.log(`${new Date().toISOString()} - Received ${req.method} request at ${req.originalUrl}`);
+    next(); // Pass control to the next middleware/route handler
+};
+// Apply the request logger middleware to all incoming requests
+app.use(requestLogger);
+
+
 // --- API Routes for Characters ---
 // GET all characters or filter by family
 app.get('/api/characters', (req, res) => {
