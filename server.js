@@ -5,7 +5,6 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 // Middleware to parse URL-encoded bodies (for form submissions)
-// This is important for handling data sent from HTML forms with method="POST"
 app.use(express.urlencoded({ extended: true }));
 // Middleware to parse JSON bodies (for API requests)
 app.use(express.json());
@@ -15,7 +14,7 @@ const { v4: uuidv4 } = require('uuid'); // Import the uuid package for generatin
 
 // --- In-Memory Data (Simulating a Database) ---
 // characters, songs, and locations arrays
-//  Each element in these arrays is an object representing a data entry.
+// Each element in these arrays is an object representing a data entry.
 // Each object has an id generated using uuidv4()
 let characters = [
     { id: uuidv4(), name: 'Maria', role: 'Governess', family: 'Non-Von Trapp' },
@@ -60,11 +59,11 @@ app.use(requestLogger);
 
 
 // --- Custom Middleware 2: Basic Authorization Simulation ---Credit: Google
-// Check for a simple 'X-Auth-Token' header
+// Check for 'x-auth-token' header
 const authorizeAPIRequest = (req, res, next) => {
-    const authToken = req.headers['x-auth-token']; // Check the header
+    const authToken = req.headers['x-auth-token'];
 
-    if (!authToken || authToken !== 'tsom1965') { // Simple check for a predefined token
+    if (!authToken || authToken !== 'tsom1965') {
         return res.status(403).json({ message: 'Forbidden: Invalid or missing authorization token.' });
     }
     next(); // If authorized, proceed to the next middleware/route
@@ -120,8 +119,8 @@ app.post('/api/locations', authorizeAPIRequest, (req, res) => {
         description
     };
 
-    locations.push(newLocation); // Add the new character to our in-memory array
-    res.status(201).json(newLocation); // Respond with the created character and 201 Created status
+    locations.push(newLocation); // Add the new character to in-memory array
+    res.status(201).json(newLocation); // Respond with the created character and 201 Created status code
 });
 
 app.delete('/api/locations/:id', authorizeAPIRequest, (req, res) => {
@@ -131,11 +130,11 @@ app.delete('/api/locations/:id', authorizeAPIRequest, (req, res) => {
     locations = locations.filter(loc => loc.id !== locationId);
 
     if (locations.length === initialLength) {
-        // If length hasn't changed, it means no location was found/deleted
+        // If length hasn't changed, no location was found/deleted
         return res.status(404).json({ message: 'Location not found' });
     }
 
-    res.status(204).send(); // Respond with 204 No Content for successful deletion
+    res.status(204).send(); // Respond with 204 No Content status code (successful deletion)
 });
 
 // --- ROUTES ---
@@ -153,7 +152,7 @@ app.get('/', (req, res, next) => {
 // --- API Routes for Characters ---
 // GET all characters or filter by family
 app.get('/api/characters', (req, res, next) => {
-    const { family } = req.query; // Extract 'family' query parameter
+    const { family } = req.query;
     if (family) {
         // Filter characters by family (case-insensitive)
         const filteredCharacters = characters.filter(character =>
@@ -231,11 +230,30 @@ app.patch('/api/songs/:id', (req, res, next) => {
 
     // Update only the fields that are provided in the request body
     const updatedSong = { ...songs[songIndex], ...req.body };
-    songs[songIndex] = updatedSong; // Replace the old song with the updated one
+    songs[songIndex] = updatedSong; // Replace the old song with updated one
 
-    res.json(updatedSong); // Respond with the updated song
+    res.json(updatedSong); // Respond with updated song
     next();
 });
+
+// GET songs by year - this is not working
+// `(\\d{4})` ensures that the 'year' parameter is exactly four digits.
+// app.get('/api/songs/year/:year(\\d{4})', (req, res) => {
+//     const year = parseInt(req.params.year, 10); // Convert the year string to an integer
+
+//     if (isNaN(year)) {
+//         // This check might be redundant due to regex, but good for robustness
+//         return res.status(400).json({ message: 'Invalid year format. Please use YYYY (e.g., /api/songs/year/1965).' });
+//     }
+
+//     const songsInYear = songs.filter(song => song.year === year);
+
+//     if (songsInYear.length === 0) {
+//         return res.status(404).json({ message: `No songs found for the year ${year}` });
+//     }
+
+//     res.json(songsInYear);
+// });
 
 // --- API Routes for Locations ---
 // GET all locations or filter by city
@@ -278,8 +296,8 @@ app.post('/api/locations', (req, res, next) => {
         description
     };
 
-    locations.push(newLocation); // Add the new character to our in-memory array
-    res.status(201).json(newLocation); // Respond with the created character and 201 Created status
+    locations.push(newLocation); // Add the new location to in-memory array
+    res.status(201).json(newLocation); // Respond with the created location and 201 Created status code
     next();
 });
 
@@ -291,43 +309,32 @@ app.delete('/api/locations/:id', (req, res, next) => {
     locations = locations.filter(loc => loc.id !== locationId);
 
     if (locations.length === initialLength) {
-        // If length hasn't changed, it means no location was found/deleted
+        // If length hasn't changed, no location was found/deleted
         return res.status(404).json({ message: 'Location not found' });
     }
 
-    res.status(204).send(); // Respond with 204 No Content for successful deletion
+    res.status(204).send(); // Respond with 204 No Content status code (successful deletion)
     next();
 });
 
 
 // --- View Engine Setup ---
 // Set the directory for views (template files)
-// `path.join(__dirname, 'views')` ensures that the path is correct regardless of
-// where the script is run from. `__dirname` is the current directory of the file.
 app.set('views', path.join(__dirname, 'views'));
 // Set EJS as the view engine
 app.set('view engine', 'ejs');
 
 // --- Static Files Setup ---
 // Serve static files from the 'public' directory
-// For example, `public/css/style.css` will be accessible via `/css/style.css`
 app.use(express.static(path.join(__dirname, 'public')));
 
 
 // --- Error-Handling Middleware ---
 app.use((err, req, res, next) => {
-    console.error(err.stack); // Log the error stack to the console for debugging purposes
-    res.status(500).json({ // Send a 500 Internal Server Error response
-        message: 'Something went wrong!',
-        error: err.message // Optionally send the error message, but be careful with sensitive info
+    console.error(err.stack); // Log error stack to console for debugging purposes
+    res.status(500).json({ // Send 500 Internal Server Error response
+        message: 'Something went wrong!'
     });
-});
-
-// --- Server Listener ---
-// Start the server and listen for incoming requests on the specified port
-app.listen(PORT, () => {
-    console.log(`Server is running on http://localhost:${PORT}`);
-    console.log('Press Ctrl+C to stop the server');
 });
 
 // --- Server Listener ---
