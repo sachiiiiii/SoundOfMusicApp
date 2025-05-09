@@ -141,9 +141,12 @@ app.delete('/api/locations/:id', authorizeAPIRequest, (req, res) => {
 // --- ROUTES ---
 // Basic route to render our home page
 app.get('/', (req, res, next) => {
-    // Renders the 'index.ejs' file located in the 'views' directory
-    // We can pass data to the view as an object.
-    res.render('index', { pageTitle: 'The Sound of Music App' });
+    // Render the 'index.ejs' file located in the 'views' directory
+    // Pass data to the view as an object.
+    res.render('index', { 
+        pageTitle: 'The Sound of Music App',
+        characters: characters // Pass characters array to the EJS template
+    });
     next();
 });
 
